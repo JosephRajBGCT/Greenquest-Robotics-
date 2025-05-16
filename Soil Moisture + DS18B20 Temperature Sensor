@@ -1,0 +1,35 @@
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+#define ONE_WIRE_BUS 2       // DS18B20 data pin connected to digital pin 2
+#define MOISTURE_PIN A0      // Soil moisture analog pin
+
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+void setup() {
+  Serial.begin(9600);
+  sensors.begin();  // Start DS18B20
+}
+
+void loop() {
+  // Read soil moisture
+  int moistureRaw = analogRead(MOISTURE_PIN);
+  int moisturePercent = map(moistureRaw, 1023, 0, 0, 100); // Adjust for your calibration
+
+  // Read temperature from DS18B20
+  sensors.requestTemperatures();             
+  float temperatureC = sensors.getTempCByIndex(0);
+
+  // Display results
+  Serial.print("Soil Moisture: ");
+  Serial.print(moisturePercent);
+  Serial.println("%");
+
+  Serial.print("Temperature: ");
+  Serial.print(temperatureC);
+  Serial.println(" °C");
+
+  Serial.println("--------------------------");
+  delay(2000);  // Wait 2 seconds before next read
+}
